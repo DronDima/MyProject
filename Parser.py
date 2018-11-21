@@ -2,8 +2,9 @@ import requests
 import csv
 import re
 import time
-from api import countOfStrings
+import sql
 from bs4 import BeautifulSoup
+
 
 def getHtml(url):
     response = requests.get(url)
@@ -23,34 +24,13 @@ def getData(html, desiredWords):
                 break
     return data
 
-def isPostInPosts(link):
-    pattern = re.compile('.*' + link + '.*')
-    with open('posts.csv', 'r') as file:
-        data = file.readlines()
-        for d in data:
-            if (pattern.match(d)):
-                return (True)
-    file.close()
-    return (False)
-
-
-def write_csv(data):
-    for d in data:
-        if (isPostInPosts(d["link"]) == False):
-            with open('posts.csv', 'a') as file:
-                writer = csv.writer(file, delimiter='#')
-                writer.writerow((d['title'], d['link']))
-            file.close()
-
 
 def main():
     url = "https://habr.com/all/"
-    desiredWords = ["Методы", "Rust", "Windows", "на", "и", "но", "в", "c", "На", "И", "Но", "В", "С", "о", "О"]
-    path = "posts.csv"
+    desiredWords = ["на", "и", "но", "в", "c", "На", "И", "Но", "В", "С", "о", "О"]
     while True:
         data = getData(getHtml(url), desiredWords)
-        write_csv(data)
-        clearFile(path)
+        sql.writeData(data)
         time.sleep(300)
 
 
